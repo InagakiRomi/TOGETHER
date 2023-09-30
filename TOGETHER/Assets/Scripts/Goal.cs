@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Goal : MonoBehaviour
 {
@@ -13,11 +12,18 @@ public class Goal : MonoBehaviour
     private PlayTag PlayTag;
     private GameAudio SE;
 
+
     void Start()
     {
         GM = GameObject.Find("GM").GetComponent<GM>();
         PlayTag = GameObject.Find("GM").GetComponent<PlayTag>();
-        SE = GameObject.Find("SE").GetComponent<GameAudio>();
+
+        Scene currentScene = SceneManager.GetActiveScene();
+        string sceneName = currentScene.name;
+        if(sceneName == "Level02")
+        {
+            SE = GameObject.Find("SE").GetComponent<GameAudio>();
+        }
     }
 
     void HitByRaycast() //被射線打到時會進入此方法
