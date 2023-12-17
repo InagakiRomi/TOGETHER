@@ -6,8 +6,11 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     //Move
-    public float speed = 5f; // 移動速度
-    CharacterController characterController;
+    public float mouseSensitivity = 2.0f;
+    public float walkSpeed = 5.0f;
+    public float runSpeed = 10.0f;
+    private float verticalRotation = 0f;
+    private CharacterController characterController;
 
     //CameraEye
     Ray ray; //射線
@@ -35,13 +38,25 @@ public class Player : MonoBehaviour
 
     void MovePlayer()
     {
+        // 控制視角旋轉
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        verticalRotation -= mouseY;
+        verticalRotation = Mathf.Clamp(verticalRotation, -90f, 90f); // 限制仰角
+
+        transform.Rotate(Vector3.up * mouseX);
+        Camera.main.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+
+        // 控制玩家移動
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(horizontal, 0f, vertical);
-        Vector3 moveDirection = transform.TransformDirection(movement);
+        Vector3 moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
+        Vector3 move = transform.TransformDirection(moveDirection);
 
-        characterController.SimpleMove(moveDirection * speed);
+        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+        characterController.Move(move * currentSpeed * Time.deltaTime);
     }
 
     void MouseRay()
