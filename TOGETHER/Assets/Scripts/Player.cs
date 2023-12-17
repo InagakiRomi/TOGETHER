@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    //Move
+    public float speed = 5f; // 移動速度
+    CharacterController characterController;
+
     //CameraEye
     Ray ray; //射線
     public float raylength = 3.0f; //射線最大長度
@@ -12,12 +16,13 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-
+        characterController = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        MovePlayer();
         MouseRay();
     }
     void OnTriggerEnter(Collider coll)
@@ -26,6 +31,17 @@ public class Player : MonoBehaviour
         {
             SceneManager.LoadScene("Win");
         }
+    }
+
+    void MovePlayer()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        Vector3 movement = new Vector3(horizontal, 0f, vertical);
+        Vector3 moveDirection = transform.TransformDirection(movement);
+
+        characterController.SimpleMove(moveDirection * speed);
     }
 
     void MouseRay()
